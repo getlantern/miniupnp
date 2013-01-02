@@ -86,6 +86,8 @@ ifeq ($(OS), Linux)
 endif
 ifeq ($(JARSUFFIX), win32)
   SHAREDLIBRARY = miniupnpc.dll
+  CC = i686-w64-mingw32-gcc
+  EXTRA_LD = -lws2_32 -lIphlpapi -Wl,--no-undefined -Wl,--enable-runtime-pseudo-reloc --Wl,kill-at
 endif
 endif
 
@@ -211,14 +213,14 @@ ifeq ($(OS), Darwin)
 #	$(CC) -dynamiclib $(LDFLAGS) -Wl,-install_name,$(SONAME) -o $@ $^
 	$(CC) -dynamiclib $(LDFLAGS) -Wl,-install_name,$(INSTALLDIRLIB)/$(SONAME) -o $@ $^
 else
-	$(CC) -shared $(LDFLAGS) -Wl,-soname,$(SONAME) -o $@ $^
+	$(CC) -shared $(LDFLAGS) -Wl,-soname,$(SONAME) -o $@ $^ $(EXTRA_LD)
 endif
 
 upnpc-static:	upnpc.o $(LIBRARY) $(LDLIBS)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^ $(EXTRA_LD)
 
 upnpc-shared:	upnpc.o $(SHAREDLIBRARY) $(LDLIBS)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^ $(EXTRA_LD)
 
 testminixml:	$(TESTMINIXMLOBJS)
 
